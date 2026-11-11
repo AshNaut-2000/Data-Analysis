@@ -1,15 +1,18 @@
--- SQLite script: create SalesData and populate it with 10,000 synthetic rows.
+-- SQLite script: create salesdata and populate it with 10,000 synthetic rows.
 -- Run with: sqlite3 Data-Analysis.db < sales_data.sql
+-- This script drops and recreates salesdata each time it is run.
 
-DROP TABLE IF EXISTS SalesData;
+BEGIN TRANSACTION;
 
-CREATE TABLE SalesData (
-    CustomerID INTEGER PRIMARY KEY,
-    Name TEXT NOT NULL,
-    Age INTEGER NOT NULL CHECK (Age BETWEEN 18 AND 80),
-    City TEXT NOT NULL,
-    PurchaseAmount REAL NOT NULL CHECK (PurchaseAmount >= 0),
-    PurchaseDate TEXT NOT NULL
+DROP TABLE IF EXISTS salesdata;
+
+CREATE TABLE salesdata (
+    customerid INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL CHECK (age BETWEEN 18 AND 80),
+    city TEXT NOT NULL,
+    purchaseamount REAL NOT NULL CHECK (purchaseamount >= 0),
+    purchasedate TEXT NOT NULL
 );
 
 WITH RECURSIVE seq(n) AS (
@@ -17,7 +20,7 @@ WITH RECURSIVE seq(n) AS (
     UNION ALL
     SELECT n + 1 FROM seq WHERE n < 10000
 )
-INSERT INTO SalesData (CustomerID, Name, Age, City, PurchaseAmount, PurchaseDate)
+INSERT INTO salesdata (customerid, name, age, city, purchaseamount, purchasedate)
 SELECT
     100000 + n,
     CASE (random() & 2147483647) % 12
@@ -50,3 +53,8 @@ SELECT
     (((random() & 2147483647) % 249501) + 500) / 100.0,
     date('2020-01-01', '+' || ((random() & 2147483647) % 2192) || ' days')
 FROM seq;
+
+COMMIT;
+
+-- Verify that exactly 10,000 rows were inserted.
+SELECT COUNT(*) AS row_count FROM salesdata;
