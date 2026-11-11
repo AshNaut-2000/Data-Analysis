@@ -75,3 +75,14 @@ FROM salesdata
 GROUP BY city
 ORDER BY revenue DESC, city ASC
 LIMIT 5;
+
+-- 3) Customers whose purchase amount is above the average purchase amount.
+SELECT
+    customerid,
+    name,
+    city,
+    purchaseamount,
+    purchasedate
+FROM salesdata
+WHERE purchaseamount > (SELECT AVG(purchaseamount) FROM salesdata)
+ORDER BY purchaseamount DESC, customerid ASC;
