@@ -58,3 +58,20 @@ COMMIT;
 
 -- Verify that exactly 10,000 rows were inserted.
 SELECT COUNT(*) AS row_count FROM salesdata;
+
+-- 1) Total sales (revenue) per city.
+SELECT
+    city,
+    ROUND(SUM(purchaseamount), 2) AS total_sales
+FROM salesdata
+GROUP BY city
+ORDER BY total_sales DESC, city ASC;
+
+-- 2) Top 5 cities by revenue.
+SELECT
+    city,
+    ROUND(SUM(purchaseamount), 2) AS revenue
+FROM salesdata
+GROUP BY city
+ORDER BY revenue DESC, city ASC
+LIMIT 5;
